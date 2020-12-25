@@ -9,7 +9,7 @@ const Nav = ({ create, users, location: { pathname } })=> {
         <nav>
             <Link to = '/' className = { pathname === '/' ? 'selected' : ''}>Home</Link>
             <Link to = '/users' className = { pathname === '/users' ? 'selected' : ''}>Users ({ users.length })</Link>
-            <button onClick={()=> create(faker.name.firstName())}>Create</button>
+            <Link to = '/users/create' className = { pathname === '/users/create' ? 'selected' : ''}>Create User</Link>
         </nav>
     ); 
 }

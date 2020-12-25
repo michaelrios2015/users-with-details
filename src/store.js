@@ -5,6 +5,7 @@ import axios from 'axios';
 const LOAD = 'LOAD';
 const CREATE = 'CREATE';
 const DELETE = 'DELETE';
+const UPDATE = 'UPDATE';
 
 
 //reducer
@@ -17,6 +18,9 @@ const usersReducer = (state = [], action)=> {
     }
     if(action.type === DELETE){
         state = state.filter(user => user.id !== action.user.id);
+    }
+    if(action.type === UPDATE){
+        state = state.map(user => user.id !== action.user.id ? user : action.user);
     }
     return state;
 }
@@ -59,10 +63,20 @@ const destroyUser = (user, history)=>{
     };
 };
 
+const _updateUser = user => ({ type: UPDATE, user });
+
+const updateUser = (id, name, history)=>{
+    return async(dispatch)=> {
+        const user = (await axios.put(`/api/users/${id}`, { name })).data;
+        dispatch(_updateUser(user));
+        history.push(`/users`);
+    };
+};
+
 
 //making store
 const store = createStore(reducer, applyMiddleware(thunk));
 
 //exporting
 export default store;
-export { loadUsers, createUser, destroyUser };
+export { loadUsers, createUser, destroyUser, updateUser };

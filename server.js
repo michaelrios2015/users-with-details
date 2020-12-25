@@ -28,16 +28,30 @@ app.post('/api/users', async(req, res, next)=> {
   });
 
 app.delete('/api/users/:id', async(req, res, next)=> {
-    try {
-      const user = await User.findByPk(req.params.id);
-      await user.destroy();
-      res.sendStatus(204);
-    }
+  try {
+    const user = await User.findByPk(req.params.id);
+    await user.destroy();
+    res.sendStatus(204);
+  }  
     catch(ex){
       next(ex);
     }
   });
 
+  app.put('/api/users/:id', async(req, res, next)=> {
+    try {
+      const user = await User.findByPk(req.params.id);
+      res.send( await user.update(req.body));
+    }
+    catch(ex){
+      console.log('put error');
+      next(ex);
+    }
+  }); 
+
+  app.use((err, req, res, next)=> {
+    res.status(500).send({ error: err });
+  })
 
 const init = async()=> {
   try {
@@ -55,7 +69,13 @@ const { STRING } = Sequelize;
 const conn = new Sequelize(process.env.DATABASE_URL || 'postgres://postgres:JerryPine@localhost/acme_db');
 
 const User = conn.define('user', {
-  name: STRING 
+  name: {
+    type: STRING,
+    unique: true,
+    validate: {
+      notEmpty: true
+    }
+  } 
 });
 const syncAndSeed = async()=> {
   await conn.sync({ force: true });
